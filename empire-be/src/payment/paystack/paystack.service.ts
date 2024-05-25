@@ -5,7 +5,6 @@ import axios from 'axios';
 @Injectable()
 export class PaystackService {
   private logger = new Logger(PaystackService.name);
-  //private paystackBaseUrl = 'https://api.paystack.co';
   private paystackBaseUrl = process.env.PAYSTACK_BASE_URL;
   private paystackSecretKey: string;
 

@@ -15,7 +15,6 @@ import { PaymentModule } from './payment/module/payment.module';
     TypeOrmModule.forRoot(databaseConfig),
     ConfigModule.forRoot({
       isGlobal: true,
-      //envFilePath: '.env',
     }),
     UserModule,
     AuthModule,
