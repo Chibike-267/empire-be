@@ -14,7 +14,7 @@ export class FileUploadService {
       }
 
       if (file.size > this.maxFileSize) {
-        throw new Error(`File size exceeds the maximum limit of 100MB`);
+        throw new Error(`File size exceeds the maximum limit of 20MB`);
       }
 
       const fileName = `${Date.now()}-${file.originalname}`;
