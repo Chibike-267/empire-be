@@ -15,16 +15,4 @@ export class PaymentController {
   async verifyAndSavePayment(@Body('reference') reference: string) {
     return this.paymentService.verifyAndSavePayment(reference);
   }
-
-  // @Post('initialize')
-  // async processPayment(@Body() paymentDto: PaymentDto) {
-  //   const result = await this.paymentService.processPayment(paymentDto);
-  //   return { authorizationUrl: result.authorizationUrl };
-  // }
-
-  // @Post('verify')
-  // async verifyAndSavePayment(@Body('reference') reference: string) {
-  //   const result = await this.paymentService.verifyAndSavePayment(reference);
-  //   return result;
-  // }
 }
