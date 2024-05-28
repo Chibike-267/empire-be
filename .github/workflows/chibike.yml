@@ -51,3 +51,4 @@ jobs:
       run: |
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker push your-image-name:${{ github.sha }}
+      continue-on-error: true
