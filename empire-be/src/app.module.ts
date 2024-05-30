@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FileUploadModule } from './multer/module/multer.module';
-import { databaseConfig } from './database/db.config';
+import { dbConfig } from './database/db.config';
 import { UserModule } from './user/module/user.module';
 import { AuthModule } from './auth/module/auth.module';
 import { UnitModule } from './unit/module/unit.module';
@@ -12,9 +12,10 @@ import { PaymentModule } from './payment/module/payment.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(databaseConfig),
+    TypeOrmModule.forRoot(dbConfig),
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
     UserModule,
     AuthModule,
