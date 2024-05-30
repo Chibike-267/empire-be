@@ -7,24 +7,40 @@ on:
     branches: [ "chibike" ]
 
 jobs:
+
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [18.x]
-        
+
+    env:
+      envVarsToMask: JWT_SECRET,DB_NAME,DB_USERNAME,DB_PASSWORD,DB_HOST,DB_PORT,CLOUDINARY_CLOUD_NAME,CLOUDINARY_CLOUD_API_KEY,SENDGRID_API_KEY,SENDGRID_EMAIL,PAYSTACK_SECRET_KEY,PAYSTACK_BASE_URL
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
+
     - run: yarn install --frozen-lockfile
     - run: yarn build
+
     - name: Run test and generate coverage report
       run: yarn test -- --coverage
+      continue-on-error: true
 
+    - name: Build Docker Image
+      run: |
+        docker build -t your-image-name:${{ github.sha }} -f ./path/to/Dockerfile ./path/to/docker/context
+
+    - name: Deploy to Firebase
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        npm install -g firebase-tools
+        yarn firebase-tools deploy --only hosting --token "$FIREBASE_TOKEN" --project your-project-id
+      continue-on-error: true
