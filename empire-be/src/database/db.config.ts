@@ -7,14 +7,14 @@ import { Reservation } from '../reservation/entity/reservation.entity';
 import { Address } from '../payment/entity/address.entity';
 import { PaymentMethod } from 'src/payment/entity/payment_method.entity';
 
-export const databaseConfig: TypeOrmModuleOptions = {
+export const dbConfig: TypeOrmModuleOptions = {
   type: 'postgres',
-  //type: process.env.DATABASE_TYPE,
-  host: process.env.DATABASE_HOST,
-  port: parseInt(process.env.DATABASE_PORT, 10),
-  username: process.env.DATABASE_USERNAME,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME,
+  //type: process.env.DB_TYPE,
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT, 10),
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   entities: [User, Profile, Unit, Reservation, Payment, Address, PaymentMethod],
   //entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,
