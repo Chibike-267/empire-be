@@ -10,7 +10,6 @@
           ".env",
           "package.json",
           "yarn.lock",
-          ".eslintrc.js",
           "tsconfig.json",
           "tsconfig.build.json",
           "nes-cli.json"
