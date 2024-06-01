@@ -43,6 +43,7 @@ export class User {
   @Column({ default: 'light' })
   theme: string;
 
+<<<<<<< HEAD
   @Column({ nullable: true })
   resetpasswordcode: string | null;
 
@@ -51,6 +52,16 @@ export class User {
 
   @Column({ nullable: true })
   resetpasswordexpiration: number | null;
+=======
+  // @Column({ nullable: true })
+  // resetpasswordcode: string | null;
+
+  // @Column({ default: false })
+  // resetpasswordstatus: boolean;
+
+  // @Column({ nullable: true })
+  // resetpasswordexpiration: number | null;
+>>>>>>> 47d41d4 (project)
 
   @Column({ nullable: false })
   otp: string;
@@ -67,6 +78,12 @@ export class User {
   @Column({ nullable: true })
   verificationtoken: string | null;
 
+<<<<<<< HEAD
+=======
+  // @Column({ name: 'profileId' })
+  // profileId: string;
+
+>>>>>>> 47d41d4 (project)
   @OneToOne(() => Profile, (profile) => profile.user)
   @JoinColumn()
   profile: Profile;
