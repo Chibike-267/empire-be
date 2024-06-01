@@ -2,45 +2,72 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "chibike" ]
+    branches: ["chibike"]
   pull_request:
-    branches: [ "chibike" ]
+    branches: ["chibike"]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18.x]
-
     env:
-      envVarsToMask: JWT_SECRET,DB_NAME,DB_USERNAME,DB_PASSWORD,DB_HOST,DB_PORT,CLOUDINARY_CLOUD_NAME,CLOUDINARY_CLOUD_API_KEY,SENDGRID_API_KEY,SENDGRID_EMAIL,PAYSTACK_SECRET_KEY,PAYSTACK_BASE_URL
+      envVarsToMask: JWT_SECRET,DB_NAME,DB_USERNAME,DB_PASSWORD,DB_HOST,DB_PORT,CLOUDINARY_CLOUD_NAME,CLOUDINARY_CLOUD_API_KEY,SENDGRID_API_KEY,SENDGRID_EMAIL,PAYSTACK_SECRET_KEY,PAYSTACK_BASE_URL,DOCKER_HUB_USERNAME,DOCKER_HUB_PASSWORD
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
-    - run: yarn install --frozen-lockfile
-    - run: yarn build
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
 
-    - name: Run test and generate coverage report
-      run: yarn test -- --coverage
-      continue-on-error: true
+      - name: Run test and generate coverage report
+        run: yarn test -- --coverage
+        continue-on-error: true
 
-    - name: Build Docker Image
-      run: |
-        docker build -t your-image-name:${{ github.sha }} -f ./path/to/Dockerfile ./path/to/docker/context
+      # - name: Build Docker Image
+      #   run: |
+      #     docker-compose build
 
-    - name: Deploy to Firebase
-      env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-      run: |
-        npm install -g firebase-tools
-        yarn firebase-tools deploy --only hosting --token "$FIREBASE_TOKEN" --project your-project-id
-      continue-on-error: true
+      # - name: Push Docker Image
+      #   env:
+      #     DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      #     DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      #   run: |
+      #     docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
+      #     docker-compose push
+
+      # - name: Deploy to Host
+      #   env:
+      #     HOST_USER: ${{ secrets.HOST_USER }}
+      #     HOST_PASSWORD: ${{ secrets.HOST_PASSWORD }}
+      #     HOST_IP: ${{ secrets.HOST_IP }}
+      #   run: |
+      #     # Deploy the Docker Compose stack to the host
+      #     # Replace with your actual deployment commands
+      #     ssh $HOST_USER@$HOST_IP '
+      #       docker-compose pull
+      #       docker-compose up -d
+      #     '
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+           # Deploy to Vercel
+           # Replace with your actual deployment commands
+             vercel --prod --token=$VERCEL_TOKEN
+
+      - name: Deploy to Firebase (Optional)
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          npm install -g firebase-tools
+          yarn firebase-tools deploy --only hosting --token "$FIREBASE_TOKEN" --project your-project-id
+        continue-on-error: true

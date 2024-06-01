@@ -1,0 +1,44 @@
+version: '3'
+services:
+  empire-app:
+    container_name: empire-app-container
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - '5000:4000'
+    environment:
+      - DB_HOST=empire-postgres
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    depends_on:
+      - empire-postgres
+    restart: unless-stopped
+
+  empire-postgres:
+    container_name: empire-postgres-container
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - empire-postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  empire-adminer:
+    container_name: empire-adminer-container
+    image: adminer:latest
+    environment:
+      ADMINER_DEFAULT_SERVER: empire-postgres
+      ADMINER_DESIGN: galkaev
+    ports:
+      - '8080:8080'
+    depends_on:
+      - empire-postgres
+
+volumes:
+  empire-postgres-data:
+

@@ -13,10 +13,15 @@ const createNestServer = async (expressInstance: express.Express) => {
   );
   app.enableCors();
   await app.init();
+  return app;
 };
 
-createNestServer(server);
+let app;
+
+createNestServer(server).then((nestApp) => {
+  app = nestApp;
+});
 
 export default (req: VercelRequest, res: VercelResponse) => {
-  server(req, res);
+  app.getHttpAdapter().getInstance().handle(req, res);
 };
