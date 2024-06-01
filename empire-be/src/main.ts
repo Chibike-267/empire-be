@@ -9,7 +9,6 @@ import * as cors from 'cors';
 async function bootstrap() {
   dotenv.config();
   const app = await NestFactory.create(AppModule);
-
   app.useGlobalPipes(new ValidationPipe());
   app.use(express.static(path.join(__dirname, 'public')));
   app.use(express.json({ limit: '50mb' }));
