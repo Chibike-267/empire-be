@@ -72,4 +72,3 @@ jobs:
           npm install -g firebase-tools
           yarn firebase-tools deploy --only hosting --token "$FIREBASE_TOKEN" --project your-project-id
         continue-on-error: true
-
