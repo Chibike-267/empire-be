@@ -28,7 +28,7 @@ jobs:
       - run: yarn build
 
       - name: Run test and generate coverage report
-        run: yarn test -- --coverage --testRegex='.e2e-spec.ts$'
+        run: yarn test --coverage
         continue-on-error: true
 
       # - name: Build Docker Image
