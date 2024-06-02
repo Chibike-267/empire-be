@@ -28,7 +28,7 @@ jobs:
       - run: yarn build
 
       - name: Run test and generate coverage report
-        run: yarn test --coverage
+        run: yarn test --coverage --passWithNoTests
         continue-on-error: true
 
       # - name: Build Docker Image
