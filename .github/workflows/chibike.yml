@@ -28,7 +28,7 @@ jobs:
       - run: yarn build
 
       - name: Run test and generate coverage report
-        run: yarn test -- --coverage
+        run: yarn test -- --coverage --testRegex='.e2e-spec.ts$'
         continue-on-error: true
 
       # - name: Build Docker Image
@@ -57,12 +57,15 @@ jobs:
       #     '
 
       - name: Deploy to Vercel
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-           # Deploy to Vercel
-           # Replace with your actual deployment commands
-             vercel --prod --token=$VERCEL_TOKEN
+          # Install Vercel CLI
+          npm install --global vercel
+          
+          # Deploy to Vercel
+          vercel --prod --confirm
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy to Firebase (Optional)
         env:
