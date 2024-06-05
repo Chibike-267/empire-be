@@ -17,7 +17,7 @@ async function bootstrap() {
 
   app.use(
     cors({
-      origin: '*',
+      origin: ['http://localhost:4000', 'https://empirechico.com'],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
     }),
