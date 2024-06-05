@@ -18,10 +18,24 @@ const createNestServer = async (expressInstance: express.Express) => {
 
 let app;
 
-createNestServer(server).then((nestApp) => {
-  app = nestApp;
-});
+createNestServer(server)
+  .then((nestApp) => {
+    app = nestApp;
+    console.log('Nest application initialized');
+  })
+  .catch((err) => {
+    console.error('Nest application initialization failed', err);
+  });
 
-export default (req: VercelRequest, res: VercelResponse) => {
-  app.getHttpAdapter().getInstance().handle(req, res);
+export default async (req: VercelRequest, res: VercelResponse) => {
+  if (!app) {
+    res.status(500).send('Server is not ready');
+    return;
+  }
+  try {
+    await app.getHttpAdapter().getInstance().handle(req, res);
+  } catch (err) {
+    console.error('Error handling request', err);
+    res.status(500).send('Internal Server Error');
+  }
 };
