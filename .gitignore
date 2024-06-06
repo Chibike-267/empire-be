@@ -23,10 +23,12 @@ lerna-debug.log*
 /.idea
 .project
 /.vercel
+/api
 .classpath
 .c9/
 *.launch
 .settings/
+vercel.json
 *.sublime-workspace
 
 # IDE - VSCode

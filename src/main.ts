@@ -17,7 +17,11 @@ async function bootstrap() {
 
   app.use(
     cors({
-      origin: ['http://localhost:4000', 'https://empirechico.com'],
+      origin: [
+        'http://localhost:4000',
+        'https://empirechico-17382cd31f48.herokuapp.com',
+        'https://empirechico.com',
+      ],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
     }),

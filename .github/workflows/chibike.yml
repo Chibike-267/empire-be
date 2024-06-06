@@ -32,41 +32,19 @@ jobs:
         run: yarn test --coverage --passWithNoTests
         continue-on-error: true
 
-      # - name: Build Docker Image
-      #   run: |
-      #     docker-compose build
-
-      # - name: Push Docker Image
-      #   env:
-      #     DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      #     DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      #   run: |
-      #     docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
-      #     docker-compose push
-
-      # - name: Deploy to Host
-      #   env:
-      #     HOST_USER: ${{ secrets.HOST_USER }}
-      #     HOST_PASSWORD: ${{ secrets.HOST_PASSWORD }}
-      #     HOST_IP: ${{ secrets.HOST_IP }}
-      #   run: |
-      #     ssh $HOST_USER@$HOST_IP '
-      #       docker-compose pull
-      #       docker-compose up -d
-      #     '
-
-      - name: Deploy to Vercel
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      - name: Build Docker Image
         run: |
-          npm install --global vercel
-          vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy to Firebase (Optional)
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          docker-compose build
+      - name: Run Docker Containers
         run: |
-          npm install -g firebase-tools
-          yarn firebase-tools deploy --only hosting --token "$FIREBASE_TOKEN" --project your-project-id
+          docker-compose up -d
+
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        run: |
+          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git
+          git push heroku HEAD:chibike
+          heroku restart
         continue-on-error: true
-
