@@ -29,28 +29,23 @@ export class UserService {
     private mailerService: MailerService,
   ) {}
 
-  async signUp(signUpDto: SignUpDto): Promise<any> {
+  async signUp(signUpDto: SignUpDto, profileDto: ProfileDto) {
     try {
       const id = uuidv4();
-
       const existingUser = await this.userRepository.findOne({
         where: {
           email: signUpDto.email,
         },
       });
-
       if (existingUser) {
         throw new ConflictException('Email already exist');
       }
-
       const passwordHashed = await bcrypt.hash(
         signUpDto.password,
         await bcrypt.genSalt(),
       );
-
       const { otp, expiry } = generateOTP();
       const verificationtoken = generateVerificationToken(id);
-
       const newUser = this.userRepository.create({
         ...signUpDto,
         id,
@@ -60,12 +55,19 @@ export class UserService {
         otpExpiry: expiry,
       });
       await this.userRepository.save(newUser);
-      await this.mailerService.sendVerificationEmail(signUpDto.email, otp);
 
+      const newProfile = this.profileRepository.create({
+        ...profileDto,
+        user: newUser,
+      });
+      const userProfile = await this.profileRepository.save(newProfile);
+
+      await this.mailerService.sendVerificationEmail(signUpDto.email, otp);
       return {
         message:
-          'Registeration successfully. check your email to activate your account.',
+          'Registration successful. Check your email to activate your account.',
         user: newUser,
+        userProfile,
       };
     } catch (error) {
       console.error('Signup error:', error);
@@ -139,30 +141,7 @@ export class UserService {
     }
   }
 
-  async profile(userId: string, profileDto: ProfileDto) {
-    try {
-      const user = await this.userRepository.findOne({
-        where: { id: userId },
-      });
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      const id = uuidv4();
-      const newProfile = this.profileRepository.create({
-        id,
-        ...profileDto,
-        user,
-      });
-      const userProfile = await this.profileRepository.save(newProfile);
-      return { msg: 'User profile created successfully', userProfile };
-    } catch (error) {
-      console.error('Fail to create profile', error);
-      throw error;
-    }
-  }
-
-  async editProfile(profileId: string, editProfileDto: EditProfileDto) {
+  async editProfileName(profileId: string, editProfileDto: EditProfileDto) {
     try {
       const profile = await this.profileRepository.findOne({
         where: { id: profileId },
@@ -173,16 +152,117 @@ export class UserService {
       }
 
       profile.username = editProfileDto.username;
-      profile.photo = editProfileDto.photo;
 
-      const updatedProfile = await this.profileRepository.save(profile);
+      const updatedProfileName = await this.profileRepository.save(profile);
 
-      return {
-        msg: 'Profile edited successfully',
-        editedProfile: updatedProfile,
-      };
+      return updatedProfileName;
     } catch (error) {
       console.error('Fail to edit profile', error);
+      throw error;
+    }
+  }
+
+  async removeProfilePhoto(profileId: string): Promise<Profile> {
+    try {
+      const profile = await this.profileRepository.findOne({
+        where: { id: profileId },
+      });
+      if (!profile) {
+        throw new NotFoundException('Profile not found');
+      }
+      // Update the photo property to null or an empty string
+      profile.photo = null; // or profile.photo = '';
+      // Save the updated profile
+      const updatedProfile = await this.profileRepository.save(profile);
+      return updatedProfile;
+    } catch (error) {
+      console.error('Error deleting profile photo:', error);
+      throw new InternalServerErrorException('Failed to delete profile photo');
+    }
+  }
+
+  async updateProfilePhoto(
+    profileId: string,
+    editProfileDto: EditProfileDto,
+  ): Promise<Profile> {
+    try {
+      const profile = await this.profileRepository.findOne({
+        where: { id: profileId },
+      });
+
+      if (!profile) {
+        throw new NotFoundException('Profile not found');
+      }
+
+      if (editProfileDto.photo) {
+        profile.photo = editProfileDto.photo;
+      }
+
+      const updatedProfile = await this.profileRepository.save(profile);
+      return updatedProfile;
+    } catch (error) {
+      console.error('Error updating profile photo:', error);
+      throw new InternalServerErrorException('Failed to update profile photo');
+    }
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        throw new NotFoundException('User does not exist');
+      }
+      await this.userRepository.remove(user);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      throw new InternalServerErrorException('Failed to delete user');
+    }
+  }
+
+  // async deleteUser(id: string): Promise<User | null> {
+  //   try {
+  //     const user = await this.userRepository.findOne({ where: { id } });
+
+  //     if (!user) {
+  //       return null;
+  //     }
+
+  //     await this.userRepository.remove(user);
+  //     return user;
+  //   } catch (error) {
+  //     console.error('Error deleting user:', error);
+  //     throw new InternalServerErrorException('Failed to delete user');
+  //   }
+  // }
+
+  async getUserTheme(userId: string) {
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      return user.theme;
+    } catch (error) {
+      console.error('Error retrieving user theme from the database:', error);
+      throw error;
+    }
+  }
+
+  async updateUserTheme(userId: string, theme: string) {
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      user.theme = theme;
+      await this.userRepository.save(user);
+      return user.theme;
+    } catch (error) {
+      console.error('Error updating user theme from the database:', error);
       throw error;
     }
   }
@@ -220,70 +300,6 @@ export class UserService {
     }
   }
 
-  async cancelProfile(profileId: string) {
-    const profile = await this.profileRepository.findOne({
-      where: { id: profileId },
-    });
-
-    if (!profile) {
-      throw new NotFoundException('Profile not found');
-    }
-
-    try {
-      await this.profileRepository.remove(profile);
-      return { message: 'Profile cancelled successfully' };
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async deleteProfile(profileId: string): Promise<Profile | null> {
-    try {
-      const profile = await this.profileRepository.findOne({
-        where: { id: profileId },
-      });
-
-      if (!profile) {
-        return null;
-      }
-
-      await this.profileRepository.remove(profile);
-      return profile;
-    } catch (error) {
-      console.error('Error deleting user profile:', error);
-      throw new InternalServerErrorException('Failed to delete user profile');
-    }
-  }
-
-  async deleteUser(userId: string): Promise<void> {
-    try {
-      const user = await this.userRepository.findOne({ where: { id: userId } });
-      if (!user) {
-        throw new NotFoundException('User does not exist');
-      }
-      await this.userRepository.remove(user);
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      throw new InternalServerErrorException('Failed to delete user');
-    }
-  }
-
-  // async deleteUser(id: string): Promise<User | null> {
-  //   try {
-  //     const user = await this.userRepository.findOne({ where: { id } });
-
-  //     if (!user) {
-  //       return null;
-  //     }
-
-  //     await this.userRepository.remove(user);
-  //     return user;
-  //   } catch (error) {
-  //     console.error('Error deleting user:', error);
-  //     throw new InternalServerErrorException('Failed to delete user');
-  //   }
-  // }
-
   async getUserByEmail(email: string): Promise<User | null> {
     try {
       const user = await this.userRepository.findOne({ where: { email } });
@@ -295,39 +311,6 @@ export class UserService {
       return user || null;
     } catch (error) {
       console.error('Error retrieving user from the database:', error);
-      throw error;
-    }
-  }
-
-  async getUserTheme(userId: string) {
-    try {
-      const user = await this.userRepository.findOne({ where: { id: userId } });
-
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      return user.theme;
-    } catch (error) {
-      console.error('Error retrieving user theme from the database:', error);
-      throw error;
-    }
-  }
-
-  async updateUserTheme(userId: string, theme: string) {
-    try {
-      const user = await this.userRepository.findOne({ where: { id: userId } });
-
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      user.theme = theme;
-      await this.userRepository.save(user);
-
-      return { message: 'User theme updated successfully' };
-    } catch (error) {
-      console.error('Error updating user theme from the database:', error);
       throw error;
     }
   }

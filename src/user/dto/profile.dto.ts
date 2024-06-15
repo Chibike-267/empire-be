@@ -1,12 +1,11 @@
 export class ProfileDto {
   firstname: string;
   lastname: string;
-  username: string;
-  email: string;
+  username?: string;
   photo?: string[];
 }
 
 export class EditProfileDto {
-  username: string;
+  username?: string;
   photo?: string[];
 }

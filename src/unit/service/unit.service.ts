@@ -109,10 +109,12 @@ export class UnitService {
     }
   }
 
-  async getSingleUnit(id: string): Promise<{ message: string; unit: Unit }> {
+  async getSingleUnit(
+    unitId: string,
+  ): Promise<{ message: string; unit: Unit }> {
     try {
       const unit: Unit = await this.unitRepository.findOne({
-        where: { id },
+        where: { id: unitId },
         relations: ['reservations'],
       });
 

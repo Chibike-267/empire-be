@@ -32,13 +32,19 @@ export class ReservationController {
   }
 
   @Patch('edit/:id')
-  async editReservation(@Param('id') id: string, @Body() editDto: EditDto) {
-    return await this.reservationService.editReservation(editDto, id);
+  async editReservation(
+    @Param('id') reservationId: string,
+    @Body() editDto: EditDto,
+  ) {
+    return await this.reservationService.editReservation(
+      editDto,
+      reservationId,
+    );
   }
 
   @Delete('cancel/:id')
-  async cancelReservation(@Param('id') id: string): Promise<any> {
-    return await this.reservationService.cancelReservation(id);
+  async cancelReservation(@Param('id') reservationId: string): Promise<any> {
+    return await this.reservationService.cancelReservation(reservationId);
   }
 
   @Get('all')
@@ -53,20 +59,20 @@ export class ReservationController {
 
   @Get('single/:id')
   async getOneReservation(
-    @Param('id') id: string,
+    @Param('id') reservationId: string,
   ): Promise<{ reservation: Reservation; unit: Unit }> {
-    return await this.reservationService.getOneReservation(id);
+    return await this.reservationService.getOneReservation(reservationId);
   }
 
   @Post('check-in/:id')
-  async checkIn(@Param('id') id: string): Promise<any> {
-    return await this.reservationService.checkIn(id);
+  async checkIn(@Param('id') reservationId: string): Promise<any> {
+    return await this.reservationService.checkIn(reservationId);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('check-out/:id')
-  async checkOut(@Param('id') id: string) {
-    return await this.reservationService.checkOut(id);
+  async checkOut(@Param('id') reservationId: string) {
+    return await this.reservationService.checkOut(reservationId);
   }
 
   @Post('update-status')
