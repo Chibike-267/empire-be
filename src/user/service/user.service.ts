@@ -170,9 +170,9 @@ export class UserService {
       if (!profile) {
         throw new NotFoundException('Profile not found');
       }
-      // Update the photo property to null or an empty string
+      // I update the photo property to null or an empty string
       profile.photo = null; // or profile.photo = '';
-      // Save the updated profile
+      // I save the updated profile
       const updatedProfile = await this.profileRepository.save(profile);
       return updatedProfile;
     } catch (error) {
