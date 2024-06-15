@@ -26,17 +26,11 @@ export class Profile {
   @Column({ nullable: true })
   username?: string;
 
-  @Column({ unique: true })
-  email: string;
-
   @Column({ type: 'enum', enum: Status })
   status: string;
 
   @Column('json', { nullable: true })
   photo?: string[];
-
-  // @Column({ default: false })
-  // isCancelled = boolean;
 
   @OneToOne(() => User, (user) => user.profile)
   @JoinColumn()

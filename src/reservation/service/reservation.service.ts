@@ -75,10 +75,10 @@ export class ReservationService {
     }
   }
 
-  async editReservation(editDto: EditDto, id: string): Promise<any> {
+  async editReservation(editDto: EditDto, reservationId: string): Promise<any> {
     try {
       const reserveUnit = await this.reservationRepository.findOne({
-        where: { id: id },
+        where: { id: reservationId },
       });
 
       if (!reserveUnit) {
@@ -86,7 +86,7 @@ export class ReservationService {
       }
 
       const updatedReservation = await this.reservationRepository.update(
-        id,
+        reservationId,
         editDto,
       );
 
@@ -100,10 +100,10 @@ export class ReservationService {
     }
   }
 
-  async cancelReservation(id: string): Promise<any> {
+  async cancelReservation(reservationId: string): Promise<any> {
     try {
       const reservation = await this.reservationRepository.findOne({
-        where: { id },
+        where: { id: reservationId },
       });
 
       if (!reservation) {
@@ -111,7 +111,7 @@ export class ReservationService {
       }
 
       const updatedReservation = await this.reservationRepository.update(
-        { id },
+        { id: reservationId },
         { status: Status.CANCEL },
       );
 
@@ -120,7 +120,7 @@ export class ReservationService {
       }
 
       const cancelledReservation = await this.reservationRepository.findOne({
-        where: { id },
+        where: { id: reservationId },
       });
 
       return cancelledReservation;

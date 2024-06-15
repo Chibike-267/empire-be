@@ -18,8 +18,11 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Post('signup')
-  async signUp(@Body(ValidationPipe) signUpDto: SignUpDto): Promise<User> {
-    return this.userService.signUp(signUpDto);
+  async signUp(
+    @Body(ValidationPipe) signUpDto: SignUpDto,
+    profileDto: ProfileDto,
+  ) {
+    return this.userService.signUp(signUpDto, profileDto);
   }
 
   @Post('resend')
@@ -39,50 +42,30 @@ export class UserController {
     return this.userService.verifyEmail(code);
   }
 
-  @Get('/:email')
-  async getUserByEmail(@Param('email') email: string): Promise<User> {
-    return this.userService.getUserByEmail(email);
-  }
-
-  @Delete('delete/:userId')
+  @Delete('remove/:userId')
   async deleteUser(@Param('id') userId: string): Promise<void> {
     return this.userService.deleteUser(userId);
   }
 
-  @Post('profile/:userId')
-  async UserProfile(
-    @Param('userId') userId: string,
-    @Body() profileDto: ProfileDto,
-  ) {
-    return await this.userService.profile(userId, profileDto);
-  }
-
-  @Patch('edit-profile/:profileId')
-  async editProfile(
+  @Patch('edit-name/:id')
+  async editProfileName(
     @Param('id') profileId: string,
     @Body() editProfileDto: EditProfileDto,
   ) {
-    return await this.userService.editProfile(profileId, editProfileDto);
-  }
-
-  @Get('single/:profileId')
-  async getUserProfile(@Param('id') profileId: string) {
-    return this.userService.getUserProfile(profileId);
-  }
-
-  @Delete('cancel/:profileId')
-  async cancelProfile(@Param('id') profileId: string) {
-    return this.userService.cancelProfile(profileId);
-  }
-
-  @Get('/all')
-  async getAllProfiles() {
-    return this.userService.getAllProfiles();
+    return await this.userService.editProfileName(profileId, editProfileDto);
   }
 
   @Delete('remove/:profileId')
-  async deleteProfile(@Param('id') profileId: string) {
-    return this.userService.deleteProfile(profileId);
+  async removeProfilePhoto(@Param('profileId') profileId: string) {
+    return this.userService.removeProfilePhoto(profileId);
+  }
+
+  @Patch('edit-photo/:profileId')
+  async updateProfilePhoto(
+    @Param('profileId') profileId: string,
+    @Body() editProfileDto: EditProfileDto,
+  ) {
+    return this.userService.updateProfilePhoto(profileId, editProfileDto);
   }
 
   @Get('theme/:userId')
@@ -96,5 +79,20 @@ export class UserController {
     @Body() updateUserThemeDto: UpdateUserThemeDto,
   ) {
     return this.userService.updateUserTheme(userId, updateUserThemeDto.theme);
+  }
+
+  @Get('single/:id')
+  async getUserProfile(@Param('id') profileId: string) {
+    return this.userService.getUserProfile(profileId);
+  }
+
+  @Get('/:email')
+  async getUserByEmail(@Param('email') email: string): Promise<User> {
+    return this.userService.getUserByEmail(email);
+  }
+
+  @Get('/all')
+  async getAllProfiles() {
+    return this.userService.getAllProfiles();
   }
 }

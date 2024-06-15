@@ -54,16 +54,16 @@ export class UnitController {
   }
 
   @Get('single-unit/:id')
-  async getSingleUnit(@Param('id', ParseUUIDPipe) id: string) {
-    return await this.unitService.getSingleUnit(id);
+  async getSingleUnit(@Param('id', ParseUUIDPipe) unitId: string) {
+    return await this.unitService.getSingleUnit(unitId);
   }
 
   @Patch('edit-unit/:id')
   async editUnit(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseUUIDPipe) unitId: string,
     @Body(ValidationPipe) editUnitDto: EditUnitDto,
   ) {
-    return await this.unitService.editUnit(id, editUnitDto);
+    return await this.unitService.editUnit(unitId, editUnitDto);
   }
 
   @Get('dashboard')
@@ -73,6 +73,6 @@ export class UnitController {
 
   @Get('location')
   async getUniqueUnitLocations() {
-    return await this.unitService.getDashboardAnalytics();
+    return await this.unitService.getUniqueUnitLocations();
   }
 }

@@ -5,6 +5,7 @@ export enum Status {
 
 export enum Type {
   SELF_CONTAIN = 'Self-contain',
+  BUNGALOW = 'Bungalow',
   DUPLEX = 'Duplex',
   FLAT = 'Flat',
 }
