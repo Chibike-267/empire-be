@@ -65,7 +65,7 @@ export class Unit {
 //   })
 //   type: string;
 
-//   @Column({ nullable: false })
+//   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
 //   price: number;
 
 //   @Column({
