@@ -35,10 +35,15 @@ jobs:
       - name: Build Docker Image
         run: |
           docker-compose build
-          
+
       - name: Run Docker Containers
         run: |
+          set -e
+          echo "Current directory: $(pwd)"
+          ls -la
+          cat docker-compose.yml
           docker-compose up -d
+          docker-compose ps
 
           - name: Deploy to Heroku
           env:
