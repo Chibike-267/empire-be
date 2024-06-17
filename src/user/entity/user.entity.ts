@@ -52,7 +52,7 @@ export class User {
   @Column({ nullable: true })
   resetpasswordexpiration: number | null;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, default: '' })
   otp: string;
 
   @Column({ type: 'timestamp' })
