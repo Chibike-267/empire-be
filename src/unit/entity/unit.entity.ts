@@ -60,7 +60,7 @@ export class Unit {
 
 //   @Column({
 //     type: 'enum',
-//     enum: ['Self-contain', 'Duplex', 'Flat'],
+//     enum: ['Self-contain', 'Bungalow', 'Duplex', 'Flat'],
 //     nullable: false,
 //   })
 //   type: string;
