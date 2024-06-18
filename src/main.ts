@@ -17,7 +17,10 @@ async function bootstrap() {
     app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
     const corsOptions = {
-      origin: '*',
+      origin: [
+        'http://127.0.0.1:5001/empire-310ba/us-central1/api',
+        'http://localhost:4000',
+      ],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       allowedHeaders: 'Content-Type, Authorization',
       optionsSuccessStatus: 200,
