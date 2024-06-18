@@ -77,19 +77,27 @@ export class UserService {
 
   async verifyEmail(code: string): Promise<{ message: string }> {
     try {
+      console.log('Verifying email with OTP:', code);
+
       const user = await this.userRepository.findOne({
         where: {
           otp: code,
         },
       });
 
+      console.log('User found:', user);
+
       if (!user) {
         throw new NotFoundException('User not found');
       }
 
+      console.log('User OTP expiry:', user.otpExpiry);
+
       if (isAfter(new Date(), user.otpExpiry)) {
         throw new OtpExpiredException();
       }
+
+      //console.log('User email verification status:', user.isEmailVerified);
 
       if (user.isEmailVerified) {
         throw new UnauthorizedException('User already verified');
@@ -99,9 +107,14 @@ export class UserService {
       user.otp = null;
       user.otpExpiry = null;
 
+      //console.log('Saving user:', user);
       await this.userRepository.save(user);
+      //console.log('User saved successfully');
+
       return { message: 'Email verified successfully' };
     } catch (error) {
+      //console.error('Error during email verification:', error);
+
       if (error instanceof NotFoundException) {
         return { message: error.message };
       }
@@ -111,7 +124,8 @@ export class UserService {
       if (error instanceof UnauthorizedException) {
         return { message: error.message };
       }
-      throw new InternalServerErrorException('Failed to verfy user');
+
+      throw new InternalServerErrorException('Failed to verify user');
     }
   }
 
