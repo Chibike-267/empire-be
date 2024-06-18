@@ -1,18 +1,35 @@
 import { NestFactory } from '@nestjs/core';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+import * as dotenv from 'dotenv';
 import * as express from 'express';
-import * as functions from 'firebase-functions';
-import { AppModule } from './src/app.module';
+import * as path from 'path';
+import * as cors from 'cors';
 
-const expressServer = express();
-const createFunction = async (expressInstance): Promise<void> => {
-  const app = await NestFactory.create(
-    AppModule,
-    new ExpressAdapter(expressInstance),
-  );
-  await app.init();
-};
-export const api = functions.https.onRequest(async (request, response) => {
-  await createFunction(expressServer);
-  expressServer(request, response);
-});
+async function bootstrap() {
+  try {
+    dotenv.config();
+    const app = await NestFactory.create(AppModule);
+
+    app.useGlobalPipes(new ValidationPipe());
+    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.json({ limit: '50mb' }));
+    app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+    const corsOptions = {
+      origin: '*',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      allowedHeaders: 'Content-Type, Authorization',
+      optionsSuccessStatus: 200,
+    };
+
+    app.use(cors(corsOptions));
+    const port = process.env.PORT || 4000;
+    await app.listen(port);
+    //await app.listen(process.env.PORT || 4000);
+    console.log(`Application is running on: ${await app.getUrl()}`);
+  } catch (error) {
+    console.error('Error during bootstrap:', error);
+  }
+}
+bootstrap();
