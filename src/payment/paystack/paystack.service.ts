@@ -2,6 +2,7 @@ import { BadGatewayException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 
+// I set this part of code to testmode, if i set it to live and you put your live atm you will be debited automatically
 @Injectable()
 export class PaystackService {
   private logger = new Logger(PaystackService.name);
