@@ -4,7 +4,7 @@ services:
     container_name: empire-app-container
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     ports:
       - '5000:4000'
     environment:
