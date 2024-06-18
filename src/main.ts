@@ -7,22 +7,32 @@ import * as path from 'path';
 import * as cors from 'cors';
 
 async function bootstrap() {
-  dotenv.config();
-  const app = await NestFactory.create(AppModule);
+  try {
+    dotenv.config();
+    const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe());
-  app.use(express.static(path.join(__dirname, 'public')));
-  app.use(express.json({ limit: '50mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+    app.useGlobalPipes(new ValidationPipe());
+    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.json({ limit: '50mb' }));
+    app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-  app.use(
-    cors({
-      origin: '*',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      credentials: true,
-    }),
-  );
+    const corsOptions = {
+      origin: [
+        'http://127.0.0.1:5001/empire-310ba/us-central1/api',
+        'http://localhost:4000',
+      ],
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      allowedHeaders: 'Content-Type, Authorization',
+      optionsSuccessStatus: 200,
+    };
 
-  await app.listen(process.env.PORT || 4000);
+    app.use(cors(corsOptions));
+    const port = process.env.PORT || 4000;
+    await app.listen(port);
+    //await app.listen(process.env.PORT || 4000);
+    console.log(`Application is running on: ${await app.getUrl()}`);
+  } catch (error) {
+    console.error('Error during bootstrap:', error);
+  }
 }
 bootstrap();
