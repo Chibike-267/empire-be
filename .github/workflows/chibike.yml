@@ -35,7 +35,6 @@ jobs:
 
     - name: Build Docker Image
       run: |
-<<<<<<< HEAD
         docker build -t your-image-name:${{ github.sha }} -f ./path/to/Dockerfile ./path/to/docker/context
 
     - name: Deploy to Firebase
@@ -45,21 +44,3 @@ jobs:
         npm install -g firebase-tools
         yarn firebase-tools deploy --only hosting --token "$FIREBASE_TOKEN" --project your-project-id
       continue-on-error: true
-=======
-        docker build -t your-image-name:${{ github.sha }} .
-
-    - name: Deploy to Firebase
-      env:
-        FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-      run: |
-        npm install -g firebase-tools
-        yarn firebase-tools deploy --only hosting --token "$FIREBASE_SERVICE_ACCOUNT_KEY" --project your-project-id
-
-    - name: Deploy to Docker Registry
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      run: |
-        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-        docker push your-image-name:${{ github.sha }}
->>>>>>> cbd1419 (project)
