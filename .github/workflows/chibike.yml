@@ -38,6 +38,22 @@ jobs:
         run: |
           docker-compose up -d
 
+          - name: Deploy to Heroku
+          env:
+            HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+            HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+          run: |
+            git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git
+            git push heroku HEAD:chibike
+            heroku restart
+
+      # - name: Deploy to Vercel
+      #   env:
+      #     VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      #   run: |
+      #     npm install --global vercel
+      #     vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+
       - name: Deploy to Firebase (Optional)
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
